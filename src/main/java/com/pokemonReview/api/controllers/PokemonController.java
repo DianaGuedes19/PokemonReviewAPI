@@ -1,6 +1,9 @@
 package com.pokemonReview.api.controllers;
 
+import com.pokemonReview.api.DTO.PokemonDTO;
 import com.pokemonReview.api.models.Pokemon;
+import com.pokemonReview.api.service.PokemonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,16 +15,23 @@ import java.util.List;
 @RequestMapping("/api/") // Vamos  ter entre o nosso URL o "api"
 public class PokemonController {
 
-    @GetMapping("/pokemon/{id}")
-    @ResponseStatus(HttpStatus.OK)// Vai ser o request de Get
-    public Pokemon pokemonById (@PathVariable int id){
-        return new Pokemon(id,"Pikachu","Eletric");
+    private PokemonService pokemonService;
+
+    @Autowired
+    public PokemonController(PokemonService pokemonService) {
+        this.pokemonService = pokemonService;
+    }
+
+    @GetMapping("/pokemon")
+    @ResponseStatus(HttpStatus.OK)// Vai passar o estado do HTTP
+    public ResponseEntity<List<PokemonDTO>> SeeAllPokemons (){
+        return new ResponseEntity<>(pokemonService.getAllPokemon(),HttpStatus.OK);
     }
 
     @PostMapping("/pokemon")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Pokemon> createPokemon (@RequestBody Pokemon pokemon){
-        return new ResponseEntity<>(pokemon,HttpStatus.CREATED);
+    public ResponseEntity<PokemonDTO> createPokemon (@RequestBody PokemonDTO pokemonDTO){
+        return new ResponseEntity<>(pokemonService.createPokemon(pokemonDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/pokemon/{id}")
